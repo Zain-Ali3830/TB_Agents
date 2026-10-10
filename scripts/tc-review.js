@@ -1,31 +1,19 @@
 // Usage: node scripts/tc-review.js <feature> < verdicts.json
 // stdin: [{ "id": "TC-LOGIN-001", "status": "APPROVED|NEEDS-REVISION|REJECTED", "notes": "..." }, ...]
-// Writes reviewStatus/reviewNotes into test-cases.json and re-renders the XLSX.
-const { loadTestCases, tcPath, writeJson, fail } = require('./lib/common');
-const { exportTestCases } = require('./lib/xlsx');
+// Writes Review Status / Review Notes into the test case workbook.
+const { fail, rel, xlsxPath, readStdinJson } = require('./lib/common');
+const { load, save, summary } = require('./lib/workbook');
 
 const VERDICTS = ['APPROVED', 'NEEDS-REVISION', 'REJECTED'];
-
-function readStdin() {
-  return new Promise((resolve) => {
-    let data = '';
-    process.stdin.setEncoding('utf8');
-    process.stdin.on('data', (c) => { data += c; });
-    process.stdin.on('end', () => resolve(data));
-  });
-}
 
 async function main() {
   const feature = process.argv[2];
   if (!feature) fail('usage: node scripts/tc-review.js <feature> < verdicts.json');
-  const doc = loadTestCases(feature);
+  const loaded = await load(feature);
+  if (!loaded) fail(`${rel(xlsxPath(feature))} does not exist yet.`);
+  const { doc, images } = loaded;
 
-  let verdicts;
-  try {
-    verdicts = JSON.parse(await readStdin());
-  } catch (e) {
-    fail(`stdin is not valid JSON: ${e.message}`);
-  }
+  let verdicts = await readStdinJson();
   if (!Array.isArray(verdicts)) verdicts = verdicts.verdicts;
   if (!Array.isArray(verdicts) || !verdicts.length) fail('expected a non-empty JSON array of verdicts');
 
@@ -43,13 +31,9 @@ async function main() {
     tc.reviewStatus = v.status;
     tc.reviewNotes = v.notes || '';
   }
-  const missing = doc.testCases.filter((tc) => !verdicts.some((v) => v.id === tc.id)).map((tc) => tc.id);
-
-  writeJson(tcPath(feature), doc);
-  await exportTestCases(doc);
-  const n = (s) => doc.testCases.filter((tc) => tc.reviewStatus === s).length;
-  console.log(`Applied ${verdicts.length} verdicts. APPROVED=${n('APPROVED')} NEEDS-REVISION=${n('NEEDS-REVISION')} REJECTED=${n('REJECTED')} PENDING=${n('PENDING')}`);
-  if (missing.length) console.log(`No verdict given for: ${missing.join(', ')} (left unchanged)`);
+  await save(doc, images);
+  console.log(`Applied ${verdicts.length} verdicts to ${rel(xlsxPath(feature))}`);
+  console.log(summary(doc));
 }
 
 main().catch((e) => fail(e.stack || e.message));

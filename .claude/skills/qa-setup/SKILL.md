@@ -32,7 +32,7 @@ You run in the main session, so you can talk to the user. Ask **one group of que
 ## Write
 
 - `context/project-overview.md`: app, users, environments, automation repo path
-- `context/roles.md`: one section per role with its permissions, its credential **variable names** `ROLE_<ROLE_NAME>_EMAIL` / `ROLE_<ROLE_NAME>_PASSWORD` (UPPER_SNAKE_CASE of the role name), and a module × role access table if the user described one
+- `context/roles.md`: one section per role, headed with the exact role name agents must use (e.g. `## Standard User`), with its permissions, its credential **variable names** `ROLE_<ROLE_NAME>_EMAIL` / `ROLE_<ROLE_NAME>_PASSWORD` (UPPER_SNAKE_CASE of the role name), and a module × role access table if the user described one
 - `context/test-standards.md`: update only what the user changed
 - `.env`: set `APP_URL` and `APP_ENV`
 - `.env.secrets`: append the missing `ROLE_*` variable names with empty values
@@ -44,5 +44,5 @@ Keep anything the user already wrote in these files; merge, don't overwrite.
 
 Tell the user:
 1. What was written
-2. To open `.env.secrets` and fill in the `ROLE_*` values (and `FIGMA_API_KEY` if they want design comparison)
+2. To open `.env.secrets` and fill in the `ROLE_*` values. For design comparison, also add `FIGMA_API_KEY` there and the Figma link as `FIGMA_URL` in `.env`.
 3. To drop a spec into `data/inputs/` (e.g. `spec-login.md`, any format) and run `/qa spec-login.md`
