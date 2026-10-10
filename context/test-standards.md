@@ -68,7 +68,7 @@ Do not automate:
 
 ## Evidence Requirements
 
-- **PASS**: final-state screenshot
-- **FAIL**: screenshot at the failing step and at the end, plus console errors and network log when relevant
+- **PASS**: screenshot of the final state, embedded in the test case row
+- **FAIL**: screenshot at the failing step, the failed step number, and any console error in the notes
 - **BLOCKED**: reason the case could not be executed
 - Figma design comparison is advisory and never changes a PASS/FAIL verdict

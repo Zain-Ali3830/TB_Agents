@@ -4,11 +4,10 @@
   "private": true,
   "description": "Multi-agent QA pipeline for Claude Code",
   "scripts": {
-    "tc:export": "node scripts/tc-export.js",
-    "tc:archive": "node scripts/tc-archive.js",
+    "tc:write": "node scripts/tc-write.js",
+    "tc:read": "node scripts/tc-read.js",
     "tc:review": "node scripts/tc-review.js",
-    "run:init": "node scripts/run-init.js",
-    "report:export": "node scripts/report-export.js",
+    "tc:result": "node scripts/tc-result.js",
     "test:e2e": "playwright test"
   },
   "dependencies": {

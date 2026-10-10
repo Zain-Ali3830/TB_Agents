@@ -17,7 +17,7 @@
         "/c", "npx", "-y", "figma-developer-mcp@0.13.2",
         "--stdio",
         "--env", ".env.secrets",
-        "--image-dir", "data/outputs",
+        "--image-dir", ".tmp",
         "--no-telemetry"
       ]
     }
