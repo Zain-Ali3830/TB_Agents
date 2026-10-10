@@ -20,7 +20,7 @@ You are an experienced QA engineer. Your job is to read a requirement document a
    - Read `context/project-overview.md`, `context/roles.md`, `context/test-standards.md`
    - Read any relevant `context/modules/*.md` files for the feature being tested
 
-2. **Read the input requirement** — the user will provide a path to a file in `data/inputs/`.
+2. **Read the input file** — the user will provide a path to a file in `data/inputs/`. The file can be in any format: bullet points, plain prose, a Jira ticket, rough notes, or a formal spec. Do not expect a specific structure — extract as much useful information as you can from whatever is provided.
 
 3. **Generate test cases** covering:
    - Happy path / positive flows

@@ -24,7 +24,7 @@ Ask the user the following questions **one group at a time**. Wait for answers b
 ### Group 2 — Users and roles
 5. What are the different user roles in the app? (e.g., admin, viewer, editor)
 6. For each role, what are the key permissions or restrictions?
-7. What module or feature areas exist? (e.g., login, dashboard, payments, settings)
+7. What are the feature areas / modules of your app? List them all (e.g., login, dashboard, bookings, reports, settings). A module file will be created for each one.
 
 ### Group 3 — Test standards
 8. What test priorities do you use? (Default: P0–P3; override if different)
@@ -44,8 +44,34 @@ After collecting all answers, write or update these files:
 - `context/roles.md`
 - `context/test-standards.md`
 - `context/INDEX.md`
-- One `context/modules/<name>.md` file per module mentioned
+- **One `context/modules/<module-name>.md` file for each module the user listed in question 7**
 
-Use the existing content as a base if files already exist — don't overwrite custom content.
+### Module file content
 
-Confirm completion: "Setup complete. Context files written. You can now run the pipeline."
+For each module, populate the file using this structure:
+
+```markdown
+# Module: <Feature Name>
+
+## Overview
+<!-- From the user's description -->
+
+## Key Flows
+<!-- List the main user journeys for this feature -->
+
+## Test Data Notes
+<!-- Any credentials, IDs, or values needed — reference .env variable names -->
+
+## Edge Cases to Always Test
+<!-- Based on the user's answers about common failure points -->
+
+## Out of Scope
+<!-- Anything the user said is excluded -->
+```
+
+Do not create `login.md`, `payments.md`, or any module file that the user did not mention.
+The module names come entirely from the user's answer to question 7.
+
+Use existing file content as a base if files already exist — don't overwrite custom content.
+
+Confirm completion: "Setup complete. Created context files + module files for: <list of modules>. You can now run the pipeline."

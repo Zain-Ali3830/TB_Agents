@@ -4,6 +4,7 @@ description: Reviews generated test cases for quality, coverage gaps, duplicates
 tools:
   - Read
   - Glob
+  - Bash
 ---
 
 # Test Case Reviewer Agent
@@ -18,7 +19,17 @@ You are a senior QA lead with deep experience reviewing test suites before execu
    - `context/test-standards.md`
    - Relevant `context/modules/*.md`
 
-2. **Read the test case file** provided by the user (from `data/outputs/1-test-cases/`).
+2. **Read the test case XLSX file** provided by the user (from `data/outputs/1-test-cases/`).
+   Parse it using Bash + Node.js:
+   ```bash
+   node -e "
+   const XLSX = require('xlsx');
+   const wb = XLSX.readFile('data/outputs/1-test-cases/<filename>.xlsx');
+   const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+   console.log(JSON.stringify(rows, null, 2));
+   "
+   ```
+   If the `xlsx` package is not available: `npm install xlsx --prefix data/outputs/1-test-cases`
 
 3. **Review each test case** and classify it as:
    - `APPROVED` — ready to execute as-is

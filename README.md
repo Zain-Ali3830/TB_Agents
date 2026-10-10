@@ -83,6 +83,8 @@ Before running the pipeline on a new project, populate these files:
 | `context/project-overview.md` | App description, users, environments |
 | `context/roles.md` | User roles, permissions, modules |
 | `context/test-standards.md` | Priority rules, naming conventions |
-| `context/modules/*.md` | Feature-by-feature domain knowledge |
+| `context/modules/<your-feature>.md` | One file per module — **you create these**, named after your app's features |
 
-The `setup-helper` agent can interview you and fill these in automatically.
+The `setup-helper` agent can interview you and create all of these automatically.
+
+> **Note on modules:** The `context/modules/` folder has no pre-made files. You add one `.md` file per feature in your app (e.g. `dashboard.md`, `bookings.md`, `reports.md`). Agents discover them automatically — no registration needed. See `context/modules/README.md` for the template.

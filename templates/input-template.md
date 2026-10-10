@@ -1,57 +1,28 @@
-# Requirement Input Template
+# Input Files — Naming Convention
 
-> Use this format for files you place in `data/inputs/`.
-> The test-case-generator agent reads files in this format.
+Drop your requirement or spec files into `data/inputs/`.
 
----
+## File naming
 
-# Requirement: <Feature Name>
+Use this pattern so agents can identify what the file covers:
 
-**Date:** <!-- YYYY-MM-DD -->
-**Author:** <!-- Your name -->
-**Module:** <!-- Which module does this belong to? -->
-**Priority:** <!-- P0 | P1 | P2 | P3 -->
-**Ticket/Reference:** <!-- e.g. JIRA-123 or N/A -->
+```
+spec-<feature-or-flow>.md
+```
 
-## Overview
+Examples:
+- `spec-login.md`
+- `spec-password-reset.md`
+- `spec-booking-flow.md`
+- `spec-admin-dashboard.md`
 
-<!-- 2–4 sentences describing what this feature/change does and why. -->
+## File content
 
-## User Story
+There is no required format. Write whatever you have:
+- A few bullet points
+- A full user story
+- Copy-pasted Jira ticket text
+- A rough description in plain English
+- A mix of notes and screenshots descriptions
 
-As a **<!-- role, e.g. logged-in user -->**,
-I want to **<!-- action, e.g. reset my password via email -->**,
-So that **<!-- outcome, e.g. I can regain access to my account if I forget my password -->**.
-
-## Acceptance Criteria
-
-- [ ] <!-- AC1: specific, testable condition -->
-- [ ] <!-- AC2: specific, testable condition -->
-- [ ] <!-- AC3: edge case or error state -->
-- [ ] <!-- add more as needed -->
-
-## Flows to Cover
-
-### Happy Path
-<!-- Describe the primary success scenario step by step. -->
-1.
-2.
-3.
-
-### Error / Edge Cases
-<!-- Describe what should happen in failure or edge-case scenarios. -->
-- <!-- e.g. User enters an email that is not registered -->
-- <!-- e.g. User tries to reset password within 1 minute of previous request -->
-
-## Out of Scope
-
-<!-- What should NOT be tested from this requirement? -->
-- <!-- e.g. Email delivery/rendering (tested separately) -->
-
-## Design Reference
-
-<!-- Link to Figma frame or screenshot, or write N/A -->
-
-## Notes
-
-<!-- Any other context: dependencies, known issues, environment-specific behavior -->
+The test-case-generator agent will read whatever you provide and generate test cases from it.
