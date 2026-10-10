@@ -29,6 +29,7 @@ Examples:
 | UI | Visual layout, labels, error messages |
 | API | Backend endpoint validation |
 | Security | Auth, permissions, injection |
+| Accessibility | Keyboard use, labels, focus (only if in scope below) |
 | Performance | Load time, responsiveness (manual only) |
 
 ## Scope
@@ -57,8 +58,17 @@ Do not automate:
 - Cases marked P3 with no history of failure
 - Cases that require human judgment
 
+## Test Case Quality
+
+- Every test case traces to at least one requirement (`reqRefs`)
+- One action per step; name the exact field or button
+- Expected results must be observable (visible text, URL, state), not "works correctly"
+- Unclear behaviour goes into Open Questions with the assumption used, never silently invented
+- Credentials are referenced by variable name (`ROLE_ADMIN_EMAIL`), never by value
+
 ## Evidence Requirements
 
-- **PASS** — no screenshot required unless configured
-- **FAIL** — screenshot + error message required
-- **BLOCKED** — explain what prevented execution
+- **PASS**: final-state screenshot
+- **FAIL**: screenshot at the failing step and at the end, plus console errors and network log when relevant
+- **BLOCKED**: reason the case could not be executed
+- Figma design comparison is advisory and never changes a PASS/FAIL verdict

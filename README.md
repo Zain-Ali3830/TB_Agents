@@ -1,90 +1,70 @@
 # QA Agents Framework
 
-A multi-agent QA pipeline powered by Claude Code that takes requirements as input and produces reviewed test cases, manual execution reports, and automated Playwright tests as output.
-
-## Quick Start
-
-1. **Configure your project** — fill in `context/` files with your project details (or run the setup helper agent)
-2. **Set credentials** — copy `.env.example` to `.env` and fill in your app URL and test credentials
-3. **Drop requirements** — place requirement `.md` files in `data/inputs/`
-4. **Run the pipeline** — invoke agents in order using Claude Code
-
-## Pipeline
+A Claude Code pipeline that turns a spec (in any format) into reviewed test cases, browser-executed results with evidence, and passing Playwright tests.
 
 ```
-[Input: requirement .md]
-        │
-        ▼
-  0-framework-analyzer     ← runs once per project, populates context/automation-guide.md
-        │
-        ▼
-  1-test-case-generator    ← reads inputs/, writes to data/outputs/1-test-cases/
-        │
-        ▼
-  2-test-case-reviewer     ← reads 1-test-cases/, writes to data/outputs/2-reviews/
-        │
-        ▼
-  3-manual-tester          ← reads reviewed cases, executes via Playwright MCP, writes to data/outputs/3-execution-reports/
-        │
-        ▼
-  4-automation-engineer    ← reads execution reports, writes Playwright scripts to data/outputs/4-automation/
+spec-*.md ─▶ 1 generate ─▶ 2 review ⇄ you ─▶ 3 execute (browser + Figma) ─▶ 4 automate
+             test-cases.xlsx           execution-report.xlsx           *.spec.ts (run & green)
 ```
 
-## Invoking Agents
+## One-time setup
 
-In Claude Code, use the `--agent` flag or the subagent name:
+1. **Install:** Node.js 20+, then in this folder:
+   ```bash
+   npm install
+   npx playwright install chromium
+   ```
+2. **Open Claude Code in this folder** and approve the `playwright` and `figma` MCP servers when prompted (or check with `/mcp`).
+3. **Run `/qa-setup`.** It interviews you and fills in `context/`, sets `APP_URL` in `.env`, and adds your role variables to `.env.secrets`.
+4. **Fill in `.env.secrets`** yourself: `ROLE_<ROLE>_EMAIL` / `ROLE_<ROLE>_PASSWORD` for each role, plus `FIGMA_API_KEY` if you want design comparison. Agents never read this file.
+5. **Optional:** add module files to `context/modules/` (see its README).
 
-```bash
-# Analyze the project framework (run once)
-claude --agent 0-framework-analyzer
+## Testing a feature
 
-# Generate test cases from a requirement
-claude --agent 1-test-case-generator "data/inputs/login-requirement.md"
+1. Drop a spec into `data/inputs/`, named `spec-<feature>.md`. Any format works: bullets, a pasted ticket, rough notes.
+2. Run `/qa spec-<feature>.md`.
+3. The skill walks you through the four stages:
+   - **Generate:** test cases traced to the requirements extracted from your spec, plus open questions for anything unclear. You can answer the questions straight away.
+   - **Review:** a separate reviewer (a different model) reports findings, and you decide whether the generator should fix them. This loops until you're satisfied.
+   - **Execute:** you're asked for a Figma link (optional). Approved cases run in a real browser, each with screenshots, and failures also get console and network logs.
+   - **Automate:** passed cases become Playwright tests that are run until green and checked for flakiness.
 
-# Review generated test cases
-claude --agent 2-test-case-reviewer "data/outputs/1-test-cases/login-test-cases.md"
+To resume or repeat one stage: `/qa spec-<feature>.md --from review|execute|automate`.
 
-# Execute manual tests
-claude --agent 3-manual-tester "data/outputs/2-reviews/login-test-cases-reviewed.md"
+## Where things go
 
-# Generate automation scripts
-claude --agent 4-automation-engineer "data/outputs/3-execution-reports/login-execution-report.md"
+```
+data/inputs/spec-<feature>.md                    your spec (never modified)
+data/outputs/1-test-cases/<feature>/
+    test-cases.json                              source of truth
+    test-cases.xlsx                              Test Cases · Requirements (coverage) · Open Questions
+    history/                                     previous versions
+data/outputs/3-execution-reports/<feature>-<run-id>/
+    execution.json
+    execution-report.xlsx                        Summary · Results with clickable evidence
+    screenshots/  logs/  figma/
+data/outputs/4-automation/
+    <feature>.spec.ts  pages/  fixtures/
 ```
 
-## Directory Structure
+Run the generated tests yourself with `npx playwright test` (HTML report in `data/outputs/4-automation/.report`).
 
-```
-qa-agents/
-├── .claude/agents/          # Agent definitions (generic, never edit per project)
-├── context/                 # Project knowledge (set up once per project)
-│   └── modules/             # One file per feature area
-├── templates/               # Shared formats
-└── data/
-    ├── inputs/              # Drop requirement files here
-    └── outputs/
-        ├── 1-test-cases/
-        ├── 2-reviews/
-        ├── 3-execution-reports/
-        └── 4-automation/
-```
+## Framework layout
 
-## Prerequisites
+| Path | What it is |
+|---|---|
+| `.claude/skills/qa/` | `/qa` pipeline orchestrator (talks to you) |
+| `.claude/skills/qa-setup/` | `/qa-setup` onboarding interview |
+| `.claude/agents/` | The five unattended agents (generic, not edited per project) |
+| `scripts/` | Validation and XLSX export (`tc-export`, `tc-review`, `tc-archive`, `run-init`, `report-export`) |
+| `templates/data-formats.md` | JSON formats agents read and write |
+| `context/` | Project knowledge (per project) |
+| `.mcp.json` | Playwright MCP (`--secrets .env.secrets`, headless) and Figma MCP |
+| `playwright.config.ts` | Config for the generated tests |
+| `CLAUDE.md` | Rules every session and agent follows |
 
-- Claude Code CLI installed
-- Node.js 18+ (for Playwright MCP)
-- `.env` filled in with target app credentials
+## Notes
 
-## Context Setup
-
-Before running the pipeline on a new project, populate these files:
-
-| File | What to put in it |
-|------|-------------------|
-| `context/project-overview.md` | App description, users, environments |
-| `context/roles.md` | User roles, permissions, modules |
-| `context/test-standards.md` | Priority rules, naming conventions |
-| `context/modules/<your-feature>.md` | One file per module — **you create these**, named after your app's features |
-
-The `setup-helper` agent can interview you and create all of these automatically.
-
-> **Note on modules:** The `context/modules/` folder has no pre-made files. You add one `.md` file per feature in your app (e.g. `dashboard.md`, `bookings.md`, `reports.md`). Agents discover them automatically — no registration needed. See `context/modules/README.md` for the template.
+- **Not on Windows?** `.mcp.json` launches servers with `cmd /c npx …`. On macOS/Linux, change `"command": "cmd"` to `"npx"` and drop `"/c", "npx"` from the args.
+- **Watch the browser:** remove `--headless` from the playwright server in `.mcp.json`.
+- **Agents and models:** the generator uses Sonnet and the reviewer uses Opus, so the reviewer isn't checking work from the same model. Change `model:` in each agent's frontmatter if needed.

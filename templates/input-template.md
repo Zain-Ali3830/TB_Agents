@@ -16,6 +16,8 @@ Examples:
 - `spec-booking-flow.md`
 - `spec-admin-dashboard.md`
 
+The part after `spec-` becomes the feature name: it names the output folder and the test case IDs (`spec-booking-flow.md` gives `TC-BOOKING-FLOW-001`).
+
 ## File content
 
 There is no required format. Write whatever you have:

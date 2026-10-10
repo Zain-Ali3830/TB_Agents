@@ -1,7 +1,7 @@
 # Project Overview
 
 > Fill in this file before running any pipeline agents.
-> The setup-helper agent can interview you and fill this in automatically.
+> The `/qa-setup` skill can interview you and fill this in automatically.
 
 ## Application
 
